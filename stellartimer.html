@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interstellar Timer</title>
+    <style>
+        /* Style for the entire page */
+        body {
+            background-color: #ffffff;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+
+        /* Styling for the time displays */
+        .timer {
+            font-size: 2em;
+            margin: 10px 0;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Error styling - hidden by default */
+        .error {
+            display: none;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Real Time in EST -->
+    <div id="estTime" class="timer"></div>
+
+    <!-- Miller's Planet Time since the Interstellar release date -->
+    <div id="millersTime" class="timer"></div>
+
+    <!-- Error handling (hidden by default) -->
+    <div id="error" class="error">Error: BODY_NOT_A_STRING_FROM_FUNCTION</div>
+
+    <script>
+        // Interstellar release date: November 7, 2014
+        const releaseDate = new Date('2014-11-07T00:00:00Z');
+        const millersConversionFactor = 7 * 365 * 24 * 60 * 60 * 1000;  // 1 hour on Miller's planet = 7 years on Earth
+
+        function updateTimers() {
+            try {
+                // EST Timer
+                const now = new Date();
+                const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+                document.getElementById('estTime').textContent = `EST Time: ${estTime.toLocaleTimeString('en-US')}`;
+
+                // Time Passed since Interstellar Release
+                const earthTimePassed = now - releaseDate;
+                const millersTimePassed = earthTimePassed / millersConversionFactor;
+
+                // Convert to days, hours, minutes, and seconds for Millers' planet
+                const millersDays = Math.floor(millersTimePassed / (24 * 60 * 60));
+                const millersHours = Math.floor((millersTimePassed % (24 * 60 * 60)) / (60 * 60));
+                const millersMinutes = Math.floor((millersTimePassed % (60 * 60)) / 60);
+                const millersSeconds = Math.floor(millersTimePassed % 60);
+
+                document.getElementById('millersTime').textContent =
+                    `Miller's Planet Time: ${millersDays} Days, ${millersHours} Hours, ${millersMinutes} Minutes, ${millersSeconds} Seconds`;
+            } catch (error) {
+                // Display error if something goes wrong
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        // Update the timers every second
+        setInterval(updateTimers, 1000);
+
+        // Call the function immediately to avoid delay on first load
+        updateTimers();
+    </script>
+
+</body>
+</html>
